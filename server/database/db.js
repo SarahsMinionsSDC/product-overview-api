@@ -1,28 +1,29 @@
 const mongoose = require('mongoose');
 
-await mongoose.connect('mongodb://localhost/sdc', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-  useCreateIndex: true
-});
+
+mongoose.connect('mongodb://localhost/sdc', {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connection.on('connected', function () {  
+  console.log('Mongoose default connection open to sdc');
+}); 
+
 
 const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
 
 const essentialInfo = new Schema({
-  _id: ObjectId,
+  _id: mongoose.Types.ObjectId,
   id: String,
   name: String,
   slogan: String,
   description: String,
   category: String,
   default_price: String,
-});
+}, { strict: false });
 
-mongoose.model('essentialInfo', essentialInfo);
 
 const allInfo = new Schema({
+  _id: mongoose.Types.ObjectId,
+  id: String,
+  product_id: String,
     features: [
       {
         feature: String,
@@ -50,3 +51,12 @@ const allInfo = new Schema({
       }
     ]
 })
+
+const product = mongoose.model('product', essentialInfo);
+const productInformation = mongoose.model('product-information', allInfo)
+
+
+module.exports = {
+  product: product,
+  productInformation: productInformation,
+};
