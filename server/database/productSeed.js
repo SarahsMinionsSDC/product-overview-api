@@ -5,19 +5,22 @@ const mongoose = require('mongoose')
 const path = require('path');
 
 let filename = path.join(__dirname, '../../data/product.csv')
-let productStream = LineInputStream(fs.createReadStream(filename, { start: 0 }));
-productStream.setDelimiter("\n");	
+
+let LineByLineReader = require('line-by-line');
+let lr = new LineByLineReader(filename);
+
+
 
 mongoose.connection.on("open",function(err,conn) { 
 
     let bulk = product.collection.initializeOrderedBulkOp();
     let counter = 0;
 
-    productStream.on("error",function(err) {
-        console.log(err); 
+    lr.on('error', function (err) {
+        console.log(err)
     });
 
-    productStream.on("line",function(line) {
+    lr.on("line",function(line) {
         let row = line.split(",");     
         let obj = {
             id: row[0],
@@ -32,17 +35,17 @@ mongoose.connection.on("open",function(err,conn) {
         counter++;
 
         if ( counter % 1000 === 0 ) {
-            productStream.pause(); 
+            lr.pause(); 
 
             bulk.execute(function(err,result) {
                 if (err) throw err;   
                 bulk = product.collection.initializeOrderedBulkOp();
-                productStream.resume(); 
+                lr.resume(); 
             });
         }
     });
 
-    productStream.on("end",function() {
+    lr.on("end",function() {
         console.log(counter)
         if ( counter % 1000 !== 0 ) {
             bulk.execute(function(err,result) {
