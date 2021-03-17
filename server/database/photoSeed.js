@@ -27,8 +27,8 @@ mongoose.connection.on("open",function(err,conn) {
                 url: row[2],
                 thumbnail_url: row[3],
             }
-            
-        bulk.find({results:{$elemMatch:{style_id:row[1]}}}).updateOne({$addToSet: { photos: obj }})
+        // bulk.find({}).arrayFilters( [ { "results.style_id": row[1] } ] ).updateOne( { $set: { "results.$[elem].photos" : 70 } } );
+        bulk.find( {  results: { $elemMatch: { style_id: row[1]} }} ).updateOne( {$addToSet: { "results.$.photos": obj } } )
         counter++;
 
         if ( counter % 1000 === 0 ) {

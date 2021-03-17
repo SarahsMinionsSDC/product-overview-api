@@ -28,6 +28,7 @@ mongoose.connection.on("open",function(err,conn) {
                 sale_price: row[3],
                 original_price: row[4],
                 default_style: row[5],
+                photos: [],
             }
         bulk.find({product_id: row[1]}).updateOne({$addToSet: {results: obj}})
         counter++;
