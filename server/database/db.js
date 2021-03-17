@@ -32,10 +32,11 @@ const allInfo = new Schema({
     ],
     results: [
       {
+        style_id: String,
         name: String,
         original_price: String,
         sale_price: String,
-        default: Boolean,
+        default: Number,
         photos: [
           {
             thumnail_url: String,

@@ -4,7 +4,7 @@ const {productInformation } = require('./db.js');
 const mongoose = require('mongoose')
 const path = require('path');
 
-let filename = path.join(__dirname, '../../data/features.csv')
+let filename = path.join(__dirname, '../../data/styles.csv')
 
 let LineByLineReader = require('line-by-line');
 let lr = new LineByLineReader(filename);
@@ -22,19 +22,14 @@ mongoose.connection.on("open",function(err,conn) {
 
     lr.on("line",function(line) {
         let row = line.split(",");
-        let featuresObj = {
-              feature: row[2],
-              value: row[3],
-            }
             let obj = {
-                id: row[0],
-                product_id: row[1],
-                features: [featuresObj]
+                style_id: row[0],
+                name: row[2],
+                sale_price: row[3],
+                original_price: row[4],
+                default_style: row[5],
             }
-        bulk.find( { product_id: row[1] } ).upsert().updateOne({
-            $setOnInsert: obj,
-           })
-        bulk.find({product_id: row[1]}).updateOne({$addToSet: {features: featuresObj}})
+        bulk.find({product_id: row[1]}).updateOne({$addToSet: {results: obj}})
         counter++;
 
         if ( counter % 1000 === 0 ) {
