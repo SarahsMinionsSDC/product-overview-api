@@ -50,7 +50,8 @@ const allInfo = new Schema({
           }
         }
       }
-    ]
+    ],
+  related_products: Array,
 })
 
 const product = mongoose.model('product', essentialInfo);

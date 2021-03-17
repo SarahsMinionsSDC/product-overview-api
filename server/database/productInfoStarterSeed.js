@@ -9,11 +9,9 @@ let filename = path.join(__dirname, '../../data/product.csv')
 let LineByLineReader = require('line-by-line');
 let lr = new LineByLineReader(filename);
 
-
-
 mongoose.connection.on("open",function(err,conn) { 
 
-    let bulk = product.collection.initializeOrderedBulkOp();
+    let bulk = productInformation.collection.initializeOrderedBulkOp();
     let counter = 0;
 
     lr.on('error', function (err) {
@@ -39,7 +37,7 @@ mongoose.connection.on("open",function(err,conn) {
 
             bulk.execute(function(err,result) {
                 if (err) throw err;   
-                bulk = product.collection.initializeOrderedBulkOp();
+                bulk = productInformation.collection.initializeOrderedBulkOp();
                 lr.resume(); 
             });
         }
@@ -51,9 +49,8 @@ mongoose.connection.on("open",function(err,conn) {
             bulk.execute(function(err,result) {
                 if (err) throw err;   
             });
-            console.log('completed writing all the documents for product!')
+            console.log('completed writing all the documents for product-information')
         }
     });
-
 });
 

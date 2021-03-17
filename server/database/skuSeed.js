@@ -4,10 +4,10 @@ const {productInformation } = require('./db.js');
 const mongoose = require('mongoose')
 const path = require('path');
 
-let featuresCsv = path.join(__dirname, '../../data/features.csv')
+let skusCsv = path.join(__dirname, '../../data/skus.csv')
 
 let LineByLineReader = require('line-by-line');
-let featuresStream = new LineByLineReader(featuresCsv);
+let skusStream = new LineByLineReader(skusCsv);
 
 
 
@@ -16,38 +16,34 @@ mongoose.connection.on("open",function(err,conn) {
     let bulk = productInformation.collection.initializeOrderedBulkOp();
     let counter = 0;
 
-    featuresStream.on('error', function (err) {
+    skusStream.on('error', function (err) {
         console.log(err)
     });
 
-    featuresStream.on("line",function(line) {
+    skusStream.on("line",function(line) {
         let row = line.split(",");
-        let featuresObj = {
-              feature: row[2],
-              value: row[3],
-            }
-            let obj = {
-                product_id: row[1],
-                features: [featuresObj]
-            }
-        bulk.find( { product_id: row[1] } ).upsert().updateOne({
-            $setOnInsert: obj,
-           })
-        bulk.find({product_id: row[1]}).updateOne({$addToSet: {features: featuresObj}})
+            let obj = {};
+            obj.size = row[2];
+            obj.quantity = row[3];
+        
+        let $set = { $set: {} };
+        $set.$set['results.$.skus.' + row[0]] = obj
+
+        bulk.find( {  results: { $elemMatch: { style_id: row[1]} }} ).updateOne( $set )
         counter++;
 
         if ( counter % 1000 === 0 ) {
-            featuresStream.pause(); 
+            skusStream.pause(); 
 
             bulk.execute(function(err,result) {
                 if (err) throw err;   
                 bulk = productInformation.collection.initializeOrderedBulkOp();
-                featuresStream.resume(); 
+                skusStream.resume(); 
             });
         }
     });
 
-    featuresStream.on("end",function() {
+    skusStream.on("end",function() {
         console.log(counter)
         if ( counter % 1000 !== 0 ) {
             bulk.execute(function(err,result) {

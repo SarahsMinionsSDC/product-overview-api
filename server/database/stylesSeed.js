@@ -4,10 +4,10 @@ const {productInformation } = require('./db.js');
 const mongoose = require('mongoose')
 const path = require('path');
 
-let filename = path.join(__dirname, '../../data/styles.csv')
+let stylesCsv = path.join(__dirname, '../../data/styles.csv')
 
 let LineByLineReader = require('line-by-line');
-let lr = new LineByLineReader(filename);
+let stylesStream = new LineByLineReader(stylesCsv);
 
 
 
@@ -16,11 +16,11 @@ mongoose.connection.on("open",function(err,conn) {
     let bulk = productInformation.collection.initializeOrderedBulkOp();
     let counter = 0;
 
-    lr.on('error', function (err) {
+    stylesStream.on('error', function (err) {
         console.log(err)
     });
 
-    lr.on("line",function(line) {
+    stylesStream.on("line",function(line) {
         let row = line.split(",");
             let obj = {
                 style_id: row[0],
@@ -29,22 +29,23 @@ mongoose.connection.on("open",function(err,conn) {
                 original_price: row[4],
                 default_style: row[5],
                 photos: [],
+                skus: {},
             }
         bulk.find({product_id: row[1]}).updateOne({$addToSet: {results: obj}})
         counter++;
 
         if ( counter % 1000 === 0 ) {
-            lr.pause(); 
+            stylesStream.pause(); 
 
             bulk.execute(function(err,result) {
                 if (err) throw err;   
                 bulk = productInformation.collection.initializeOrderedBulkOp();
-                lr.resume(); 
+                stylesStream.resume(); 
             });
         }
     });
 
-    lr.on("end",function() {
+    stylesStream.on("end",function() {
         console.log(counter)
         if ( counter % 1000 !== 0 ) {
             bulk.execute(function(err,result) {
