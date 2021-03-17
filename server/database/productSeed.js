@@ -2,9 +2,10 @@ const LineInputStream = require('line-input-stream');
 const fs = require('fs');
 const { product, productInformation } = require('./db.js');
 const mongoose = require('mongoose')
+const path = require('path');
 
-
-let productStream = LineInputStream(fs.createReadStream("../../data/product.csv", { start: 0 }));
+let filename = path.join(__dirname, '../../data/product.csv')
+let productStream = LineInputStream(fs.createReadStream(filename, { start: 0 }));
 productStream.setDelimiter("\n");	
 
 mongoose.connection.on("open",function(err,conn) { 
