@@ -15,7 +15,7 @@ const dbHelpers = {
     getRelated: (req, callback) => {
         productInformation.findOne({product_id: req.params.product_id}, (err, result) => {
             callback(err, result);
-        })
+        }) 
     },
 }
 
