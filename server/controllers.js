@@ -12,6 +12,7 @@ const controllers = {
     },
     getProduct: (req, res) => {
         dbHelpers.getProduct(req, (err, data) => {
+          data = data.toJSON()
           let formattedData = {
             id: data.product_id,
             name: data.name,
@@ -21,16 +22,16 @@ const controllers = {
             default_price: data.default_price,
             features: data.features
           }
-          console.log(data)
           if (err) {
             res.status(400).send(err);
           } else {
-            res.status(200).send(data);
+            res.status(200).send(formattedData);
           }
         })
     },
     getStyles: (req, res) => {
         dbHelpers.getStyles(req, (err, data) => {
+          data = data.toJSON();
           let formattedData = {
             product_id: data.product_id,
             results: data.results,
@@ -44,6 +45,7 @@ const controllers = {
     },
     getRelated: (req, res) => {
         dbHelpers.getRelated(req, (err, data) => {
+          data = data.toJSON();
           if (err) {
               res.status(400).send(err);
           }  else {
