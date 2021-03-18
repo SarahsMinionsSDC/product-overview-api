@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 
-mongoose.connect('mongodb://localhost/sdc', {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect('mongodb://localhost/sdc', {useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.connection.on('connected', function () {  
   console.log('Mongoose default connection open to sdc');
 }); 
@@ -22,8 +22,7 @@ const essentialInfo = new Schema({
 
 const allInfo = new Schema({
   _id: mongoose.Types.ObjectId,
-  id: String,
-  product_id: String,
+  product_id: {type: String, index: true},
     features: [
       {
         feature: String,
@@ -32,7 +31,7 @@ const allInfo = new Schema({
     ],
     results: [
       {
-        style_id: String,
+        style_id: {type: String, index: true},
         name: String,
         original_price: String,
         sale_price: String,
@@ -53,6 +52,8 @@ const allInfo = new Schema({
     ],
   related_products: Array,
 })
+allInfo.index({product_id: 1});
+allInfo.index({style_id: 1});
 
 const product = mongoose.model('product', essentialInfo);
 const productInformation = mongoose.model('product-information', allInfo)
