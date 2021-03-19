@@ -106,3 +106,4 @@ dist
 
 data/
 newrelic.js
+mongo.pem
