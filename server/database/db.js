@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb://localhost:27017/sdc", {
+mongoose.connect("mongodb://mikey:password@3.101.12.245:27017/sdc", {
   useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -60,7 +60,7 @@ allInfo.index({ product_id: 1 });
 allInfo.index({ style_id: 1 });
 
 const product = mongoose.model("product", essentialInfo);
-const productInformation = mongoose.model("product-information", allInfo);
+const productInformation = mongoose.model("productinformation", allInfo);
 
 module.exports = {
   product: product,

@@ -54,3 +54,5 @@ mongoose.connection.on("open",function(err,conn) {
     });
 });
 
+
+db.createUser( { user: "myUserAdmin", pwd: "password", [ { role: "userAdminAnyDatabase", db: "admin" }, "readWriteAnyDatabase" ] } )

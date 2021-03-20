@@ -12,6 +12,9 @@ const controllers = {
   },
   getProduct: (req, res) => {
     dbHelpers.getProduct(req, (err, data) => {
+      if (data === null) {
+        return res.send("sorry cant find that!");
+      }
       data = data.toJSON();
       let formattedData = {
         id: data.product_id,
@@ -30,6 +33,9 @@ const controllers = {
     });
   },
   getStyles: (req, res) => {
+    if (data === null) {
+      return res.send("sorry cant find that!");
+    }
     dbHelpers.getStyles(req, (err, data) => {
       data = data.toJSON();
       let formattedData = {
@@ -44,6 +50,9 @@ const controllers = {
     });
   },
   getRelated: (req, res) => {
+    if (data === null) {
+      return res.send("sorry cant find that!");
+    }
     dbHelpers.getRelated(req, (err, data) => {
       data = data.toJSON();
       if (err) {
